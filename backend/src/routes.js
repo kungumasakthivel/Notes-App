@@ -1,11 +1,12 @@
 const express = require('express');
 const db = require('./db');
+const { validateNote } = require('../middleware/validation');
 
 const routes = express.Router();
 
 // get all notes
 routes.get('/notes', (req, res) => {
-    db.all(`SELECT * FROM notes`, (err, rows) => {
+    db.all(`SELECT * FROM notes ORDER BY created_at DESC`, (err, rows) => {
         if(err) {
             return res.status(400).json({
                 message: 'error is fetching posts',
@@ -17,16 +18,18 @@ routes.get('/notes', (req, res) => {
 });
 
 // post a note
-routes.post('/notes', (req, res) => {
-    const {title, body} = req.body;
+routes.post('/notes', validateNote,(req, res) => {
+    const {title, description, category} = req.body;
+    const created_at = new Date().toLocaleString();
+    const updated_at = new Date().toLocaleString();
 
-    if(title === undefined || body === undefined) {
+    if(title === undefined || description === undefined || category === undefined) {
         return res.status(400).json({
             message: 'title or body is not defined',
             status: 0
         })
     }
-    if(title.length === 0 || body.length === 0) {
+    if(title.length === 0 || description.length === 0 || category.length === 0) {
         return res.status(400).json({
             message: "title or body is empty",
             status: 0
@@ -34,8 +37,8 @@ routes.post('/notes', (req, res) => {
     }
 
     db.run(
-        `INSERT INTO notes (title, body) VALUES (?, ?)`,
-        [title, body],
+        `INSERT INTO notes (title, description, category, created_at, updated_at) VALUES (?, ?, ?, ?, ?)`,
+        [title, description, category, created_at, updated_at],
         function(err) {
             if(err) {
                 return res.status(400).json({
@@ -52,13 +55,13 @@ routes.post('/notes', (req, res) => {
     );
 });
 
-routes.put('/notes/:id', (req, res) => {
+routes.put('/notes/:id', validateNote,(req, res) => {
     const id = req.params.id;
-    const {title, body} = req.body;
-
+    const {title, description, category} = req.body;
+    const updated_at = new Date().toLocaleString();
     db.run(
-        `UPDATE notes SET title = ?, body = ? WHERE id = ?`,
-        [title, body, id],
+        `UPDATE notes SET title = ?, description = ?, category = ?, updated_at = ? WHERE id = ?`,
+        [title, description, category, updated_at, id],
         function(err) {
             if(err) {
                 return res.status(400).json({
