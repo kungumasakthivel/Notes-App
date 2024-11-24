@@ -1,0 +1,19 @@
+textarea, input  {
+    min-width: 250px;
+    max-width: 250px;
+}
+
+textarea {
+    min-height: 100px;
+    max-height: 100px;
+}
+
+.notes {
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+    /* overflow-y: auto; */
+}
