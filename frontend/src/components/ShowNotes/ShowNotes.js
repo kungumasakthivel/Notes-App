@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import './ShowNotes.css'
 import CreateNote from '../CreateNote/CreateNote';
+import { Link } from 'react-router-dom';
 
 function ShowNotes() {
     const [notes, setNotes] = useState([]);
@@ -54,6 +55,7 @@ function ShowNotes() {
                             <p>Updated at: {note.updated_at}</p>
                         </div>
                         <button onClick={() => deleteNotes(note.id)}>Delete</button>
+                        <button><Link to={`/notes/${note.id}`}>Edit</Link></button>
                     </li>
                 ))}
             </ul>
